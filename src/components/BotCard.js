@@ -1,25 +1,36 @@
-import React from "react";
+// BotCard.js
+import React, { useState } from "react";
 
-const botTypeClasses = {
-  Assault: "icon military",
-  Defender: "icon shield",
-  Support: "icon plus circle",
-  Medic: "icon ambulance",
-  Witch: "icon magic",
-  Captain: "icon star",
-};
+const BotCard = ({ bot, enlistBot, removeBot, deleteBot }) => {
+  const [enlisted, setEnlisted] = useState(false);
 
-function BotCard({ bot, clickEvent, deleteBot }) {
+  const handleEnlistClick = () => {
+    if (!enlisted && typeof enlistBot === "function") {
+      console.log(`Enlisting bot: ${bot.name}`);
+      setEnlisted(true);
+      enlistBot(bot);
+    }
+  };
+
+  const handleDischargeClick = () => {
+    console.log(`Discharging bot: ${bot.name}`);
+    removeBot(bot);
+  };
+
+  const handleDeleteClick = () => {
+    console.log(`Deleting bot: ${bot.name}`);
+    deleteBot(bot);
+  };
+
   return (
-    <div className="ui column">
-      <div className="ui card" key={bot.id} onClick={() => clickEvent(bot)}>
+    <div className={`ui column ${enlisted ? "enlisted" : ""}`}>
+      <div className="ui card" key={bot.id} onClick={handleEnlistClick}>
         <div className="image">
           <img alt="oh no!" src={bot.avatar_url} />
         </div>
         <div className="content">
           <div className="header">
             {bot.name}
-            <i className={botTypeClasses[bot.bot_class]} />
           </div>
           <div className="meta text-wrap">
             <small>{bot.catchphrase}</small>
@@ -30,7 +41,6 @@ function BotCard({ bot, clickEvent, deleteBot }) {
             <i className="icon heartbeat" />
             {bot.health}
           </span>
-
           <span>
             <i className="icon lightning" />
             {bot.damage}
@@ -40,22 +50,17 @@ function BotCard({ bot, clickEvent, deleteBot }) {
             {bot.armor}
           </span>
           <span>
-            <div className="ui center aligned segment basic">
-              <button
-                className="ui mini red button"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  deleteBot(bot);
-                }}
-              >
-                x
-              </button>
-            </div>
+            <button className={`ui mini red button ${enlisted ? "" : "hidden"}`} onClick={handleDischargeClick}>
+              x
+            </button>
+            <button className="ui mini red button" onClick={handleDeleteClick}>
+              Delete
+            </button>
           </span>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default BotCard;
